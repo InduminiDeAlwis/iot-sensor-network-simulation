@@ -1,0 +1,4 @@
+{
+  "serverPort": 9000,
+  "alertThreshold": 75.0
+}

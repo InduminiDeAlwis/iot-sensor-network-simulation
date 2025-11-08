@@ -12,15 +12,18 @@ import java.net.ServerSocket;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ClientTest {
+public class ClientIT {
     private static int port;
 
     @BeforeAll
     public static void setup() throws Exception {
+        // pick an ephemeral port to avoid collisions
         try (ServerSocket ss = new ServerSocket(0)) {
             port = ss.getLocalPort();
         }
+        // start server on ephemeral port
         IoTServer.start(port);
+        // give server a moment to boot
         Thread.sleep(200);
     }
 
@@ -30,12 +33,15 @@ public class ClientTest {
     }
 
     @Test
-    public void clientSendsDataAndServerStoresIt() throws Exception {
-        String[] args = new String[]{"localhost", String.valueOf(port), "test-device"};
+    public void testClientSendsDataAndServerStoresIt() throws Exception {
+        // run the IoTDevice main to send several readings
+        String[] args = new String[]{"localhost", String.valueOf(port), "itest-device"};
         IoTDevice.main(args);
+
+        // wait briefly for server to process
         Thread.sleep(300);
+
         DataStorage storage = ServerSingleton.getStorage();
         assertTrue(storage.all().size() > 0, "Server should have stored at least one SensorData");
     }
 }
-
