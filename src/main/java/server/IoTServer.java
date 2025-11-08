@@ -66,6 +66,72 @@ public class IoTServer {
                     try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
                 }
             });
+            // provide recent comms from data/comm.log
+            httpServer.createContext("/api/comms", new HttpHandler() {
+                @Override
+                public void handle(HttpExchange exchange) throws IOException {
+                    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                        exchange.sendResponseHeaders(405, -1);
+                        return;
+                    }
+                    java.nio.file.Path log = java.nio.file.Paths.get("data").resolve("comm.log");
+                    java.util.List<String> lines = new java.util.ArrayList<>();
+                    if (java.nio.file.Files.exists(log)) {
+                        try {
+                            lines = java.nio.file.Files.readAllLines(log, java.nio.charset.StandardCharsets.UTF_8);
+                        } catch (Exception e) {
+                            LoggerUtil.error("Failed to read comm.log: " + e.getMessage());
+                        }
+                    }
+                    // take last 200 lines
+                    int max = 200;
+                    int start = Math.max(0, lines.size() - max);
+                    java.util.List<String> tail = lines.subList(start, lines.size());
+
+                    // parse lines like: [ISO_INSTANT] DIR: message
+                    StringBuilder sb = new StringBuilder();
+                    sb.append('[');
+                    boolean first = true;
+                    for (String l : tail) {
+                        if (l == null || l.trim().isEmpty()) continue;
+                        String ts = "";
+                        String dir = "";
+                        String msg = "";
+                        try {
+                            int br = l.indexOf(']');
+                            if (l.startsWith("[") && br > 0) {
+                                ts = l.substring(1, br);
+                                String rest = l.substring(br + 1).trim();
+                                int colon = rest.indexOf(':');
+                                if (colon > 0) {
+                                    dir = rest.substring(0, colon).trim();
+                                    msg = rest.substring(colon + 1).trim();
+                                } else {
+                                    msg = rest;
+                                }
+                            } else {
+                                msg = l;
+                            }
+                        } catch (Exception ignored) {}
+                        if (!first) sb.append(',');
+                        first = false;
+                        sb.append('{')
+                          .append("\"timestamp\":\"").append(ts.replace("\"","\\\"")).append('\"')
+                          .append(',')
+                          .append("\"direction\":\"").append(dir.replace("\"","\\\"")).append('\"')
+                          .append(',')
+                          .append("\"msg\":\"").append(msg.replace("\"","\\\"" )).append('"')
+                          .append('}');
+                    }
+                    sb.append(']');
+
+                    byte[] bytes = sb.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                    exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+                    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+                }
+            });
             // serve static dashboard files from ./dashboard
             httpServer.createContext("/", new HttpHandler() {
                 @Override
