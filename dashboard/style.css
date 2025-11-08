@@ -7,3 +7,25 @@ h1 { color: #2c3e50; }
 #data-table thead { background: #f6f8fa; }
 .alert { background: #ffecec; color: #8a1f11; font-weight: 600; }
 #status { margin-bottom: 8px; color: #444; }
+
+/* New polished UI styles */
+.top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.top h1 { margin:0; font-size:1.4rem; }
+.controls { display:flex; gap:8px; align-items:center; }
+.controls input, .controls select { padding:6px 8px; border:1px solid #ccc; border-radius:4px; }
+.controls button { padding:6px 10px; border:none; background:#2c7; color:#fff; border-radius:4px; cursor:pointer; }
+.container { display:flex; gap:18px; margin-top:16px; align-items:flex-start; }
+.panel { background:#fff; border:1px solid #e7e7e7; padding:12px; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+.readings { flex:1 1 0; }
+.sidebar { width:260px; }
+.comms { flex: 0 0 360px; max-height: 420px; overflow:auto; }
+#comms-table { border-collapse: collapse; width: 100%; }
+#comms-table th, #comms-table td { padding:6px 8px; border-bottom:1px solid #eee; font-size:0.9em; }
+#comms-table thead { background:#fafafa; position:sticky; top:0; }
+.panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.foot { margin-top:14px; color:#666; font-size:0.9em; }
+
+@media (max-width:800px) {
+	.container { flex-direction:column; }
+	.sidebar { width:100%; }
+}

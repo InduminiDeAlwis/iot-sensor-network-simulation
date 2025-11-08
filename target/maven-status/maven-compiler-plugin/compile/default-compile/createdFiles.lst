@@ -3,6 +3,7 @@ utils\Config.class
 server\IoTServer$2.class
 server\IoTServer.class
 server\IoTServer$1.class
+server\IoTServer$3.class
 utils\JSONUtil.class
 client\IoTDevice.class
 server\AlertSystem.class

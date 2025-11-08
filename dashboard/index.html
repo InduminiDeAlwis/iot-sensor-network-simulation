@@ -2,23 +2,60 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>IoT Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>IoT Sensor Dashboard</h1>
-  <p id="status">Loading…</p>
+  <header class="top">
+    <h1>IoT Sensor Dashboard</h1>
+    <div class="controls">
+      <label for="filter">Filter device:</label>
+      <input id="filter" placeholder="device id (leave blank for all)">
+      <label for="limit">Rows:</label>
+      <select id="limit"><option>10</option><option>25</option><option selected>50</option></select>
+      <button id="refresh">Refresh</button>
+    </div>
+  </header>
 
-  <div id="content">
-    <table id="data-table">
-      <thead>
-        <tr><th>Device</th><th>Time</th><th>Value</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <main class="container">
+    <section class="panel readings">
+      <div class="panel-header">
+        <h2>Recent Readings</h2>
+        <div id="status">Loading…</div>
+      </div>
+      <table id="data-table">
+        <thead>
+          <tr><th>Device</th><th>Time</th><th>Value</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-  <p style="margin-top:12px; color:#555; font-size:0.9em">Alerts highlight readings with value &ge; <span id="threshold">75</span>.</p>
+    <section class="panel comms">
+      <div class="panel-header">
+        <h2>Recent Comms</h2>
+      </div>
+      <table id="comms-table">
+        <thead>
+          <tr><th>Time</th><th>Dir</th><th>Message</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <aside class="panel sidebar">
+      <h3>Notes</h3>
+      <p>Values >= <strong id="threshold">75</strong> are highlighted as alerts.</p>
+      <h4>Actions</h4>
+      <ul>
+        <li>Click Refresh to fetch latest data immediately.</li>
+        <li>Use the device filter to show a single device.</li>
+      </ul>
+    </aside>
+  </main>
+
+  <footer class="foot">Server API: <code>/api/data</code> • Auto-refresh every 3s</footer>
 
   <script src="script.js"></script>
 </body>
